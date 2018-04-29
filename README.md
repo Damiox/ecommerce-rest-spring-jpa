@@ -38,3 +38,4 @@ Add a "super" user.
 * H2 (in-memory database)
 * Spring Data (JPA)
 * Hibernate (ORM)
+* Spring HATEOAS
