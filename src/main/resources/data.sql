@@ -114,3 +114,10 @@ insert into app_product_category (productid, categoryid) values (32, 17);
 insert into app_product_category (productid, categoryid) values (34, 16);
 insert into app_product_category (productid, categoryid) values (35, 16);
 insert into app_product_category (productid, categoryid) values (36, 16);
+
+-- Users
+-- Normal User: username: user, password: user, role: USER
+insert into app_user (id, username, password, role) values (37, 'user', '$2a$10$saR43Zfe4eqONCn/vhcFY.OJVuMBEf3UPHgh/5qa5h6/uc3ezkCdW', 'USER');
+-- Admin / Super User: username: admin, password: admin, role: ADMIN
+insert into app_user (id, username, password, role) values (38, 'admin', '$2a$10$1e2I81sXJW0gJDKyDZxhc.JXXIpK1Y0T4AKp0GwNs32370Wa2bDqK', 'ADMIN');
+
