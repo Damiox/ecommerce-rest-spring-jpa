@@ -7,6 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
 
+/**
+ * Transform {@link Product} into {@link ProductResource} DTO
+ *
+ * @author dnardelli
+ */
 @Component
 public class ProductResourceAssembler extends ResourceAssemblerSupport<Product, ProductResource> {
 

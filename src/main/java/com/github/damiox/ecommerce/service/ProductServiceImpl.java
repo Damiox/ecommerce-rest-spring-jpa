@@ -12,6 +12,11 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import javax.transaction.Transactional;
 
+/**
+ * Spring-oriented Implementation for {@link ProductService}
+ *
+ * @author dnardelli
+ */
 @Service
 public class ProductServiceImpl implements ProductService {
 

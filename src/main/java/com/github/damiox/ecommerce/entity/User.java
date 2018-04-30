@@ -11,7 +11,8 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
- * A User is ...
+ * A User is an entity that represents a person operating the system.
+ * Users have an assigned role. Based on their role, they can access certain resources.
  *
  * @author dnardelli
  */

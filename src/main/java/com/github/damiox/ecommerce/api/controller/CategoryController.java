@@ -39,7 +39,7 @@ public class CategoryController {
     public ResponseEntity<?> retrieveCategory(@PathVariable Long id) {
         // Getting the requiring category; or throwing exception if not found
         final Category category = categoryService.getCategoryById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException("category"));
 
         return ResponseEntity.ok(categoryResourceAssembler.toResource(category));
     }
@@ -56,7 +56,7 @@ public class CategoryController {
     public ResponseEntity<?> updateCategory(@PathVariable Long id, @RequestBody @Valid CategoryDto request) {
         // Getting the requiring category; or throwing exception if not found
         final Category category = categoryService.getCategoryById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException("category"));
 
         // Updating a category in the application...
         categoryService.updateCategory(category, request.getName());
@@ -68,7 +68,7 @@ public class CategoryController {
     public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
         // Getting the requiring category; or throwing exception if not found
         final Category category = categoryService.getCategoryById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException("category"));
 
         // Deleting category from the application...
         categoryService.deleteCategory(category);

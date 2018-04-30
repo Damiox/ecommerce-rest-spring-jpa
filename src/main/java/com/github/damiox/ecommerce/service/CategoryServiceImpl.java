@@ -10,6 +10,11 @@ import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 
+/**
+ * Spring-oriented Implementation for {@link CategoryService}
+ *
+ * @author dnardelli
+ */
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
@@ -58,15 +63,14 @@ public class CategoryServiceImpl implements CategoryService {
     @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
     @Override
-    public boolean hasSubcategory(Category category, Category parent) {
-        // TODO: must check among all parents!!
+    public boolean isChildCategory(Category category, Category parent) {
         return category.getParent().equals(parent);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Transactional
     @Override
-    public void addSubcategory(Category category, Category parent) {
+    public void addChildCategory(Category category, Category parent) {
         category.setParent(parent);
         categoryRepository.save(category);
     }

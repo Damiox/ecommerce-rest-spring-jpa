@@ -18,6 +18,12 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import javax.transaction.Transactional;
 
+/**
+ * Spring-oriented Implementation for {@link SecurityService}
+ * Also it implements {@link UserDetailsService} being required by the Spring Security framework.
+ *
+ * @author dnardelli
+ */
 @Service
 public class SecurityServiceImpl implements SecurityService, UserDetailsService {
 
@@ -43,24 +49,26 @@ public class SecurityServiceImpl implements SecurityService, UserDetailsService 
 
     @Transactional
     @Override
-    public Authentication authenticate(final String token) {
-        final Claims claims = JwtUtils.parseToken(token);
+    public void authenticate(final String token) {
+        try {
+            final Claims claims = JwtUtils.parseToken(token);
 
-        User user = new User();
-        user.setUsername(claims.getSubject());
-        user.setPassword("");
-        user.setId(Long.parseLong(claims.get(JwtUtils.TOKEN_CLAIM_SUB).toString()));
-        user.setRole(claims.get(JwtUtils.TOKEN_CLAIM_ROLES).toString());
+            User user = new User();
+            user.setUsername(claims.getSubject());
+            user.setPassword("");
+            user.setId(Long.parseLong(claims.get(JwtUtils.TOKEN_CLAIM_SUB).toString()));
+            user.setRole(claims.get(JwtUtils.TOKEN_CLAIM_ROLES).toString());
 
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 
-        // Setting up Authentication...
-        SecurityContextHolder.getContext().setAuthentication(
-            //new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities())
-            authentication
-        );
-
-        return authentication;
+            // Setting up Authentication...
+            SecurityContextHolder.getContext().setAuthentication(
+                //new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities())
+                authentication
+            );
+        } catch (Exception e) {
+            throw new BadCredentialsException("Invalid token.");
+        }
     }
 
     @Transactional
@@ -96,14 +104,10 @@ public class SecurityServiceImpl implements SecurityService, UserDetailsService 
         }
 
         private static Claims parseToken(String token) {
-            try {
-                return Jwts.parser()
-                    .setSigningKey(TOKEN_SECRET_KEY)
-                    .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
-                    .getBody();
-            } catch (Exception e) {
-                throw new BadCredentialsException("Invalid token.");
-            }
+            return Jwts.parser()
+                .setSigningKey(TOKEN_SECRET_KEY)
+                .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+                .getBody();
         }
     }
 

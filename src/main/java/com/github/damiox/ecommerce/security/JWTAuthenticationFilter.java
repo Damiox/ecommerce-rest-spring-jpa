@@ -15,6 +15,13 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * JWT Authentication Filter
+ * If an 'Authorization' header is found in the HTTP Request then the token is being retrieved.
+ * That token will be validated and, if successful, then user will be authenticated.
+ *
+ * @author dnardelli
+ */
 @Component
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -42,7 +49,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         }
 
         filterChain.doFilter(request, response);
-
     }
 
 }

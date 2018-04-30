@@ -11,7 +11,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
- * TODO: A Category is ...
+ * A Category is an entity to classify Products.
+ * Categories can have subcategories, but a given category has a single parent (optional).
  *
  * @author dnardelli
  */

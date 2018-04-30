@@ -9,7 +9,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 /**
- * TODO: A Product is ...
+ * A Product is an entity that represents an article for sale.
+ * Products are associated with categories.
  *
  * @author dnardelli
  */

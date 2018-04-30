@@ -5,6 +5,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+/**
+ * Defines an abstract entity for the system.
+ * All entities in the system must have an 'id' field.
+ * This field is being used to check equality.
+ *
+ * @author dnardelli
+ */
 @MappedSuperclass
 public class AbstractEntity {
 

@@ -44,7 +44,7 @@ public class ProductController {
     public ResponseEntity<?> retrieveProduct(@PathVariable Long id) {
         // Getting the requiring product; or throwing exception if not found
         final Product product = productService.getProductById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException("product"));
 
         return ResponseEntity.ok(productResourceAssembler.toResource(product));
     }
@@ -61,7 +61,7 @@ public class ProductController {
     public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody @Valid ProductDto request) {
         // Getting the requiring product; or throwing exception if not found
         final Product product = productService.getProductById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException("product"));
 
         // Updating a product in the application...
         productService.updateProduct(product, request.getName(), request.getCurrency(), request.getPrice());
@@ -73,7 +73,7 @@ public class ProductController {
     public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
         // Getting the requiring product; or throwing exception if not found
         final Product product = productService.getProductById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException("product"));
 
         // Deleting product from the application...
         productService.deleteProduct(product);

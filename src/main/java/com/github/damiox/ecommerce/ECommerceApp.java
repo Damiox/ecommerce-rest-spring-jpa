@@ -53,6 +53,14 @@ public class ECommerceApp {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
+            // 1) Enabling Frames because it's required for h2. Note: this shouldn't be exposed to prod.
+            // 2) Setting exception handler in Filters
+            // 3) Allowing the following actions without authentication:
+            // 3.a) Processing OPTIONS for all endpoints
+            // 3.b) Processing POST on /login
+            // 3.c) Accessing to h2 web console. Note: this shouldn't be exposed to prod.
+            // 4) All the other requests need to be authenticated
+            // 5) Adding to the filter chain the JWT Authentication Filter
             http
                 .csrf()
                     .disable()

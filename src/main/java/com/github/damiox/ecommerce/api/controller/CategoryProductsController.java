@@ -34,7 +34,7 @@ public class CategoryProductsController {
     public ResponseEntity<?> retrieveAllProducts(@PathVariable Long categoryid, Pageable pageable) {
         // Getting the requiring category; or throwing exception if not found
         final Category category = categoryService.getCategoryById(categoryid)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException("category"));
 
         // Getting all products in application...
         final Page<Product> products = productService.getAllProducts(category, pageable);
@@ -46,11 +46,11 @@ public class CategoryProductsController {
     public ResponseEntity<?> addProduct(@PathVariable Long categoryid, @PathVariable Long productid) {
         // Getting the requiring category; or throwing exception if not found
         final Category category = categoryService.getCategoryById(categoryid)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException("category"));
 
         // Getting the requiring product; or throwing exception if not found
         final Product product = productService.getProductById(productid)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException("product"));
 
         // Validating if association does not exist...
         if (productService.hasCategory(product, category)) {
@@ -67,11 +67,11 @@ public class CategoryProductsController {
     public ResponseEntity<?> removeProduct(@PathVariable Long categoryid, @PathVariable Long productid) {
         // Getting the requiring category; or throwing exception if not found
         final Category category = categoryService.getCategoryById(categoryid)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException("category"));
 
         // Getting the requiring product; or throwing exception if not found
         final Product product = productService.getProductById(productid)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException("product"));
 
         // Validating if association does not exist...
         if (!productService.hasCategory(product, category)) {

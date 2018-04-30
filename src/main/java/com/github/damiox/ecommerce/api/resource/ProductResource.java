@@ -4,6 +4,11 @@ import org.springframework.hateoas.ResourceSupport;
 
 import java.util.List;
 
+/**
+ * Spring HATEOAS-oriented DTO for {@see Product} entity
+ *
+ * @author dnardelli
+ */
 public class ProductResource extends ResourceSupport {
 
     private final String name;

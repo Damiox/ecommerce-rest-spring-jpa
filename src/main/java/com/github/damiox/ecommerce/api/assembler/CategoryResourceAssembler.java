@@ -7,6 +7,11 @@ import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
 
+/**
+ * Transform {@link Category} into {@link CategoryResource} DTO
+ *
+ * @author dnardelli
+ */
 @Component
 public class CategoryResourceAssembler extends ResourceAssemblerSupport<Category, CategoryResource> {
 
