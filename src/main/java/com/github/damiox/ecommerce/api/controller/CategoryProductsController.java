@@ -17,6 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * API Endpoint for categories and products association
+ *
+ * @author dnardelli
+ */
 @RestController
 @RequestMapping(path = "/categories/{categoryid}/products")
 public class CategoryProductsController {

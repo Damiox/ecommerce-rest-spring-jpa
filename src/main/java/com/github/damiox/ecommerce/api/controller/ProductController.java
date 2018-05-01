@@ -21,6 +21,11 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+/**
+ * API Endpoint for product management
+ *
+ * @author dnardelli
+ */
 @RestController
 @RequestMapping(path = "/products")
 public class ProductController {

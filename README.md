@@ -55,6 +55,8 @@ Note: we are using HATEOAS-oriented REST endpoints (https://en.wikipedia.org/wik
 
 #### Products
 
+The list of Products is always a paginated result just in case.
+
 URL: `/products`
 
 e.g. to get products: `curl -H "Authorization: XXXX" -X GET "http://localhost:8080/products"`
@@ -67,11 +69,13 @@ e.g. to get products: `curl -H "Authorization: XXXX" -X GET "http://localhost:80
 
 ##### Add / Remove child categories
 
-To associate / dis-associate a child category with / from a parent category you can use the following URL: `/categories/{parentid}/childCategories/{childid}`
+To associate / dis-associate a child category with / from a parent category you can use the following URL: `/categories/{parentid}/subcategories/{childid}`
+To see the current child categories for a given category, you can do a GET on `/categories/{parentid}/subcategories`
 
 ##### Link / Unlink products
 
 To link / unlink products with categories you can use the following URL: `/categories/{categoryid}/products/{productid}`
+To see the current products for a given category, you can do a GET on `/categories/{parentid}/products`
 
 ## Technologies
 

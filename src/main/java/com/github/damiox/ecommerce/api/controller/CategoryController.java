@@ -18,6 +18,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+/**
+ * API Endpoint for categories
+ * Write operations require ADMIN permission.
+ *
+ * @author dnardelli
+ */
 @RestController
 @RequestMapping(path = "/categories")
 public class CategoryController {

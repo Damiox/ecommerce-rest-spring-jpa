@@ -14,6 +14,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+/**
+ * API Endpoint for user authentication
+ * It returns a JWT Token from the passed in User credentials.
+ *
+ * @author dnardelli
+ */
 @RestController
 public class AuthenticationController {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);

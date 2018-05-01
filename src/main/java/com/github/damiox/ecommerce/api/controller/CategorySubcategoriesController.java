@@ -14,6 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
 
+/**
+ * API Endpoint for categories and subcategories association
+ * Write operations require ADMIN permission.
+ *
+ * @author dnardelli
+ */
 @RestController
 @RequestMapping(path = "/categories/{parentid}/subcategories")
 public class CategorySubcategoriesController {
