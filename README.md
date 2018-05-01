@@ -67,7 +67,7 @@ e.g. to get products: `curl -H "Authorization: XXXX" -X GET "http://localhost:80
 
 ##### Add / Remove child categories
 
-To associate / dis-associate a child category with / from a parent category you can use the following URL: `/categories/{parentid}/subcategories/{childid}`
+To associate / dis-associate a child category with / from a parent category you can use the following URL: `/categories/{parentid}/childCategories/{childid}`
 
 ##### Link / Unlink products
 

@@ -34,7 +34,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public Page<Product> getAllProducts(Category category, Pageable page) {
-        return productRepository.findByCategories(category, page);
+        return productRepository.findByAssociatedWithCategory(category.getId(), page);
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -96,6 +96,13 @@ public class ProductServiceImpl implements ProductService {
     public void removeCategory(Product product, Category category) {
         product.getCategories().remove(category);
         productRepository.save(product);
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Transactional
+    @Override
+    public boolean hasProductsAssociated(Category category) {
+        return productRepository.countByAssociatedWithCategory(category.getId()) > 0;
     }
 
 }

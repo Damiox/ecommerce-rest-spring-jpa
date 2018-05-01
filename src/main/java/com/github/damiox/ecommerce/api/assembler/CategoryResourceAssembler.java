@@ -1,8 +1,12 @@
 package com.github.damiox.ecommerce.api.assembler;
 
 import com.github.damiox.ecommerce.api.controller.CategoryController;
+import com.github.damiox.ecommerce.api.controller.CategoryProductsController;
+import com.github.damiox.ecommerce.api.controller.CategorySubcategoriesController;
 import com.github.damiox.ecommerce.api.resource.CategoryResource;
 import com.github.damiox.ecommerce.entity.Category;
+import com.github.damiox.ecommerce.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
@@ -14,6 +18,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CategoryResourceAssembler extends ResourceAssemblerSupport<Category, CategoryResource> {
+
+    @Autowired
+    private ProductService productService;
 
     public CategoryResourceAssembler() {
         super(CategoryController.class, CategoryResource.class);
@@ -30,9 +37,13 @@ public class CategoryResourceAssembler extends ResourceAssemblerSupport<Category
         if (entity.getParent() != null) {
             resource.add(ControllerLinkBuilder.linkTo(ControllerLinkBuilder.methodOn(CategoryController.class).retrieveCategory(entity.getParent().getId())).withRel("parent"));
         }
-        if (entity.getSubcategories() != null) {
-            //resource.add(ControllerLinkBuilder.linkTo(ControllerLinkBuilder.methodOn(CategorySubcategoriesController.class).retrieveAllSubcategories(entity.getParent().getId())).withRel("subcategories"));
+        if (entity.getChildCategories() != null) {
+            resource.add(ControllerLinkBuilder.linkTo(ControllerLinkBuilder.methodOn(CategorySubcategoriesController.class).retrieveAllSubcategories(entity.getId())).withRel("subcategories"));
         }
+        if (productService.hasProductsAssociated(entity)) {
+            resource.add(ControllerLinkBuilder.linkTo(ControllerLinkBuilder.methodOn(CategoryProductsController.class).retrieveAllProducts(entity.getId(), null)).withRel("products"));
+        }
+
         return resource;
     }
 

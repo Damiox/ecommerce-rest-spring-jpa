@@ -30,7 +30,7 @@ public class CategorySubcategoriesController {
             .orElseThrow(() -> new NotFoundException("parent category"));
 
         // Getting all categories in application...
-        final Set<Category> subcategories = parent.getSubcategories();
+        final Set<Category> subcategories = parent.getChildCategories();
 
         return ResponseEntity.ok(categoryResourceAssembler.toResources(subcategories));
     }
@@ -72,7 +72,7 @@ public class CategorySubcategoriesController {
         }
 
         // Dis-associating parent with subcategory...
-        categoryService.removeSubcategory(child, parent);
+        categoryService.removeChildCategory(child, parent);
 
         return ResponseEntity.noContent().build();
     }

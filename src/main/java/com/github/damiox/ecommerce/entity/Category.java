@@ -12,7 +12,7 @@ import javax.persistence.Table;
 
 /**
  * A Category is an entity to classify Products.
- * Categories can have subcategories, but a given category has a single parent (optional).
+ * Categories can have childCategories, but a given category has a single parent (optional).
  *
  * @author dnardelli
  */
@@ -31,7 +31,7 @@ public class Category extends AbstractEntity {
     private Set<Product> products;
 
     @OneToMany(mappedBy = "parent")
-    private Set<Category> subcategories;
+    private Set<Category> childCategories;
 
     public String getName() {
         return name;
@@ -57,12 +57,12 @@ public class Category extends AbstractEntity {
         this.products = products;
     }
 
-    public Set<Category> getSubcategories() {
-        return subcategories;
+    public Set<Category> getChildCategories() {
+        return childCategories;
     }
 
-    public void setSubcategories(Set<Category> subcategories) {
-        this.subcategories = subcategories;
+    public void setChildCategories(Set<Category> childCategories) {
+        this.childCategories = childCategories;
     }
 
 }

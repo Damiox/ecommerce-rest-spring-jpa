@@ -10,7 +10,10 @@ import javax.persistence.Table;
 
 /**
  * A Product is an entity that represents an article for sale.
- * Products are associated with categories.
+ * Products are associated with categories either directly or indirectly.
+ * For instance, for a given child category B, if it's associated to a
+ * parent category A, then the Product is associated with
+ * category B (directly) and A (indirectly).
  *
  * @author dnardelli
  */

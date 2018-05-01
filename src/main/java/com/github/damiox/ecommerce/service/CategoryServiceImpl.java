@@ -21,7 +21,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
     @Override
     public List<Category> getAllCategories() {
@@ -78,7 +78,7 @@ public class CategoryServiceImpl implements CategoryService {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Transactional
     @Override
-    public void removeSubcategory(Category category, Category parent) {
+    public void removeChildCategory(Category category, Category parent) {
         category.setParent(null);
         categoryRepository.save(category);
     }

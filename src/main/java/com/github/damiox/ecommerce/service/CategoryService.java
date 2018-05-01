@@ -73,6 +73,6 @@ public interface CategoryService {
      * @param child the child category to remove
      * @param parent the parent category to remove the child from
      */
-    void removeSubcategory(Category child, Category parent);
+    void removeChildCategory(Category child, Category parent);
 
 }

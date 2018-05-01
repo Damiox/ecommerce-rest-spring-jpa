@@ -24,7 +24,9 @@ public interface ProductService {
     Page<Product> getAllProducts(Pageable page);
 
     /**
-     * Gets all products that are associated to the given category.
+     * Gets all products that are associated with the given category.
+     * The association can be either directly or indirectly.
+     * Please {@see Product} entity for more details.
      *
      * @param category the category to filter
      * @param page the page to fetch results from
@@ -95,5 +97,14 @@ public interface ProductService {
      * @param category the category to remove
      */
     void removeCategory(Product product, Category category);
+
+    /**
+     * Checks whether or not a given category has products associated.
+     * The association can be either directly or indirectly.
+     * Please {@see Product} entity for more details.
+     *
+     * @param category the category to check
+     */
+    boolean hasProductsAssociated(Category category);
 
 }
