@@ -35,8 +35,8 @@ Add a "super" user.
 ### Authentication
 
 Currently there are two roles defined as follows:
-- ADMIN: it's the super user role that can manipulate categories and all products
-- USER: it's a user role that can manipulate only products owned by him / her. It can also get data for other users' products and categories.
+- ADMIN: it's the super user role that can manipulate categories and products.
+- USER: it's a user role that can manipulate only products. It can also get data for products and categories. Ideally, Users should only access to their own Products.
 
 #### Admin User
 `curl -H "Content-Type: application/json" -X POST "http://localhost:8080/login" -d '{ "username": "admin", "password": "admin" }'`
@@ -75,13 +75,17 @@ To see the current child categories for a given category, you can do a GET on `/
 ##### Link / Unlink products
 
 To link / unlink products with categories you can use the following URL: `/categories/{categoryid}/products/{productid}`
-To see the current products for a given category, you can do a GET on `/categories/{parentid}/products`
+To see the current products for a given category, you can do a GET on `/categories/{parentid}/products`.
+Note: the API will return also products that are being associated indirectly.
+That means if a Product is associated with Category B, which is in turn a child of Category A,
+then the product is directly associated with Category B, and indirectly associated with Category A.
+Accessing to `/categories/A/products` will return that product that is associated with Category A indirectly along with the products being associated directly with the Category A.
 
 ## Technologies
 
 * Java 8
 * Spring Boot
-* Spring Web (including Spring MVC)
+* Spring Web / MVC
 * H2 (in-memory database)
 * Spring Data (JPA)
 * Hibernate (ORM)
