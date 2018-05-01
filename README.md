@@ -30,6 +30,49 @@ Add a "super" user.
 1. A product might be associated to multiple categories. For instance, an electric toothbrush may belong to both "Electronics" and "Beauty & Personal Care" categories.
 2. There are some fields that for simplicity we are not having in Product table such as description, features, price discount, refurbished, among others.
 
+## Testing
+
+### Authentication
+
+Currently there are two roles defined as follows:
+- ADMIN: it's the super user role that can manipulate categories and all products
+- USER: it's a user role that can manipulate only products owned by him / her. It can also get data for other users' products and categories.
+
+#### Admin User
+`curl -H "Content-Type: application/json" -X POST "http://localhost:8080/login" -d '{ "username": "admin", "password": "admin" }'`
+
+#### Normal User
+`curl -H "Content-Type: application/json" -X POST "http://localhost:8080/login" -d '{ "username": "user", "password": "user" }'`
+
+### Resources
+
+Excepting the `/login` API endpoint that is being used for authentication, the other API endpoints require a HTTP header to be passed in as parameter
+This HTTP header will have the name "Authorization" and the value will be the authentication token that was retrieved during the authentication transaction.
+Note: this token is a JWT token that is signed with a private key configured in the server, and it has the user information.
+The idea behind this JWT token is to avoid going back to the database to validate whether a JWT token is valid or not, because that information is already contained in the token itself.
+
+Note: we are using HATEOAS-oriented REST endpoints (https://en.wikipedia.org/wiki/HATEOAS), so you will find the possible operations to perform on resources while browsing the main endpoints: `/products` and `/categories`
+
+#### Products
+
+URL: `/products`
+
+e.g. to get products: `curl -H "Authorization: XXXX" -X GET "http://localhost:8080/products"`
+
+#### Categories
+
+URL: `/categories`
+
+e.g. to get products: `curl -H "Authorization: XXXX" -X GET "http://localhost:8080/categories"`
+
+##### Add / Remove child categories
+
+To associate / dis-associate a child category with / from a parent category you can use the following URL: `/categories/{parentid}/subcategories/{childid}`
+
+##### Link / Unlink products
+
+To link / unlink products with categories you can use the following URL: `/categories/{categoryid}/products/{productid}`
+
 ## Technologies
 
 * Java 8

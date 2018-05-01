@@ -1,6 +1,5 @@
 package com.github.damiox.ecommerce;
 
-import com.github.damiox.ecommerce.security.EntryPointUnauthorizedHandler;
 import com.github.damiox.ecommerce.security.JWTAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -8,6 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -40,14 +41,12 @@ public class ECommerceApp {
         @Autowired
         private JWTAuthenticationFilter authenticationFilter;
         @Autowired
-        private EntryPointUnauthorizedHandler unauthorizedHandler;
-        @Autowired
         private UserDetailsService userDetailsService;
 
         @Override
         protected void configure(AuthenticationManagerBuilder security) throws Exception {
             security
-                .userDetailsService(this.userDetailsService)
+                .userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder());
         }
 
@@ -67,9 +66,6 @@ public class ECommerceApp {
                 .headers()
                     .frameOptions()
                     .sameOrigin()
-                    .and()
-                .exceptionHandling()
-                    .authenticationEntryPoint(this.unauthorizedHandler)
                     .and()
                 .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -92,6 +88,15 @@ public class ECommerceApp {
         @Override
         public AuthenticationManager authenticationManagerBean() throws Exception {
             return super.authenticationManagerBean();
+        }
+
+        // Note: if we want to manage more roles, probably we need to create a UserRole entity class
+        // and keep this logic isolated somewhere
+        @Bean
+        public RoleHierarchy roleHierarchy(){
+            RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+            roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_USER");
+            return roleHierarchy;
         }
 
     }

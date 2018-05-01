@@ -1,19 +1,18 @@
 package com.github.damiox.ecommerce.security;
 
 import com.github.damiox.ecommerce.service.SecurityService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import javax.annotation.PostConstruct;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * JWT Authentication Filter
@@ -23,32 +22,30 @@ import javax.servlet.http.HttpServletRequest;
  * @author dnardelli
  */
 @Component
-public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
+    private static final Logger logger = LoggerFactory.getLogger(JWTAuthenticationFilter.class);
     private static final String HEADER_STRING = "Authorization";
 
     @Autowired
     private SecurityService securityService;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @PostConstruct
-    private void initialize() {
-        this.setAuthenticationManager(authenticationManager);
-    }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
-        throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest httpRequest, HttpServletResponse httpResponse, FilterChain filterChain)
+        throws ServletException, IOException {
 
-        final HttpServletRequest httpRequest = HttpServletRequest.class.cast(request);
         final String token = httpRequest.getHeader(HEADER_STRING);
 
         if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            securityService.authenticate(token);
+            try {
+                securityService.authenticate(token);
+            } catch (Exception e) {
+                logger.debug("Failed when authenticating token '{}'. Error: '{}'", token, e.getMessage());
+            }
         }
 
-        filterChain.doFilter(request, response);
+        filterChain.doFilter(httpRequest, httpResponse);
+
     }
 
 }

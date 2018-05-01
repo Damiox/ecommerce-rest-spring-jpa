@@ -1,6 +1,8 @@
 package com.github.damiox.ecommerce.api.controller;
 
 import com.github.damiox.ecommerce.service.SecurityService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +16,7 @@ import javax.validation.constraints.Size;
 
 @RestController
 public class AuthenticationController {
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
     @Autowired
     private SecurityService securityService;
@@ -26,6 +29,7 @@ public class AuthenticationController {
         // Authenticating...
         final String token = securityService.authenticate(username, password);
 
+        logger.debug("User '{}' authenticated successfully -> Token: '{}'", username, token);
         return ResponseEntity.ok(new AuthenticationResponse(token));
     }
 

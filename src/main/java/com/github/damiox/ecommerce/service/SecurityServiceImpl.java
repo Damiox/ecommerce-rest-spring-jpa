@@ -7,7 +7,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -50,25 +49,18 @@ public class SecurityServiceImpl implements SecurityService, UserDetailsService 
     @Transactional
     @Override
     public void authenticate(final String token) {
-        try {
-            final Claims claims = JwtUtils.parseToken(token);
+        final Claims claims = JwtUtils.parseToken(token);
 
-            User user = new User();
-            user.setUsername(claims.getSubject());
-            user.setPassword("");
-            user.setId(Long.parseLong(claims.get(JwtUtils.TOKEN_CLAIM_SUB).toString()));
-            user.setRole(claims.get(JwtUtils.TOKEN_CLAIM_ROLES).toString());
+        User user = new User();
+        user.setUsername(claims.getSubject());
+        user.setPassword("");
+        user.setId(Long.parseLong(claims.get(JwtUtils.TOKEN_CLAIM_SUB).toString()));
+        user.setRole(claims.get(JwtUtils.TOKEN_CLAIM_ROLES).toString());
 
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-
-            // Setting up Authentication...
-            SecurityContextHolder.getContext().setAuthentication(
-                //new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities())
-                authentication
-            );
-        } catch (Exception e) {
-            throw new BadCredentialsException("Invalid token.");
-        }
+        // Setting up Authentication...
+        SecurityContextHolder.getContext().setAuthentication(
+            new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities())
+        );
     }
 
     @Transactional
