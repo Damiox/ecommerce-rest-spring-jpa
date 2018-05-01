@@ -3,6 +3,7 @@ package com.github.damiox.ecommerce.service;
 import com.github.damiox.ecommerce.dao.ProductRepository;
 import com.github.damiox.ecommerce.entity.Category;
 import com.github.damiox.ecommerce.entity.Product;
+import com.github.damiox.ecommerce.util.CurrencyExchangeCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private CurrencyExchangeCommand currencyExchangeCommand;
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
@@ -48,11 +51,16 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public Product createProduct(String name, String currency, double price) {
+        if (!Product.CURRENCY.equals(currency)) {
+            price = currencyExchangeCommand.convert(currency, Product.CURRENCY, price);
+        }
+
+        // Round up only 2 decimals...
+        price = (double) Math.round(price * 100) / 100;
+
         Product product = new Product();
         product.setName(name);
         product.setPrice(price);
-
-        // TODO: convert currency
 
         return productRepository.save(product);
     }
@@ -61,7 +69,12 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public void updateProduct(Product product, String name, String currency, double price) {
-        // TODO: convert currency
+        if (!Product.CURRENCY.equals(currency)) {
+            price = currencyExchangeCommand.convert(currency, Product.CURRENCY, price);
+        }
+
+        // Round up only 2 decimals...
+        price = (double) Math.round(price * 100) / 100;
 
         product.setName(name);
         product.setPrice(price);

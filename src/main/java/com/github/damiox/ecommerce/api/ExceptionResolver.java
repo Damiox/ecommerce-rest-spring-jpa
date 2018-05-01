@@ -1,9 +1,12 @@
 package com.github.damiox.ecommerce.api;
 
 import com.github.damiox.ecommerce.exception.NotFoundException;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Exception Resolver.
@@ -15,8 +18,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ExceptionResolver {
 
     @ExceptionHandler(value = NotFoundException.class)
-    public ResponseEntity<?> resolveNotFoundException() {
-        return ResponseEntity.notFound().build();
+    public void handleNotFoundException(HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.NOT_FOUND.value());
+    }
+
+    @ExceptionHandler(value = { IllegalArgumentException.class, IllegalStateException.class })
+    public void handleIllegalArgumentException(HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.BAD_REQUEST.value());
     }
 
 }

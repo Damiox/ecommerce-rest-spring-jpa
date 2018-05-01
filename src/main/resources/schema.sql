@@ -29,3 +29,5 @@ create table if not exists app_product_category (
     foreign key (productid) references app_product(id),
     foreign key (categoryid) references app_category(id)
 );
+
+create sequence if not exists hibernate_sequence start with 100;

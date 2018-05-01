@@ -3,6 +3,7 @@ package com.github.damiox.ecommerce.api.assembler;
 import com.github.damiox.ecommerce.api.controller.ProductController;
 import com.github.damiox.ecommerce.api.resource.ProductResource;
 import com.github.damiox.ecommerce.entity.Product;
+import io.jsonwebtoken.lang.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
@@ -28,7 +29,7 @@ public class ProductResourceAssembler extends ResourceAssemblerSupport<Product, 
             entity.getName(),
             Product.CURRENCY,
             entity.getPrice(),
-            categoryResourceAssembler.toResources(entity.getCategories())
+            !Collections.isEmpty(entity.getCategories()) ? categoryResourceAssembler.toResources(entity.getCategories()) : null
         );
     }
 

@@ -21,7 +21,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     // SQL Native Queries being used to get categories associated either directly or indirectly
     // For more information about this relation please check {@link Product}
-    String GET_PRODUCTS_ASSOCIATED_WITH_CATEGORY_SQL = "select p.* from app_product p inner join app_product_category pc on p.id = pc.productid where pc.categoryid in (" + CategoryRepository.GET_RECURSIVELY_ALL_SUBCATEGORIES_SQL + ")";
+    String GET_PRODUCTS_ASSOCIATED_WITH_CATEGORY_SQL = "select p.* from app_product p inner join app_product_category pc on p.id = pc.productid where (pc.categoryid = ?1 or pc.categoryid in (select ac.id from (" + CategoryRepository.GET_RECURSIVELY_ALL_SUBCATEGORIES_SQL + ") ac where ac.parentid = ?1)) ";
     String COUNT_PRODUCTS_ASSOCIATED_WITH_CATEGORY_SQL = "select count(1) from (" + GET_PRODUCTS_ASSOCIATED_WITH_CATEGORY_SQL + ")";
 
     /**
