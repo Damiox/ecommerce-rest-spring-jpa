@@ -1,5 +1,6 @@
 package com.github.damiox.ecommerce.service;
 
+import com.github.damiox.ecommerce.entity.User;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 
@@ -29,5 +30,12 @@ public interface SecurityService {
      * @exception BadCredentialsException when auth token is invalid
      */
     void authenticate(final String token);
+
+    /**
+     * Gets the current logged in User.
+     *
+     * @return the logged in User information
+     */
+    User getCurrentUser();
 
 }

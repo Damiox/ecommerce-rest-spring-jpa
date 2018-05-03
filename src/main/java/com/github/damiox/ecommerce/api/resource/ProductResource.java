@@ -15,12 +15,14 @@ public class ProductResource extends ResourceSupport {
     private final String currency;
     private final double price;
     private final List<CategoryResource> categories;
+    private final String owner;
 
-    public ProductResource(String name, String currency, double price, List<CategoryResource> categories) {
+    public ProductResource(String name, String currency, double price, List<CategoryResource> categories, String owner) {
         this.name = name;
         this.currency = currency;
         this.price = price;
         this.categories = categories;
+        this.owner = owner;
     }
 
     public String getName() {
@@ -37,6 +39,10 @@ public class ProductResource extends ResourceSupport {
 
     public List<CategoryResource> getCategories() {
         return categories;
+    }
+
+    public String getOwner() {
+        return owner;
     }
 
 }

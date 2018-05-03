@@ -3,6 +3,7 @@ package com.github.damiox.ecommerce.service;
 import com.github.damiox.ecommerce.dao.ProductRepository;
 import com.github.damiox.ecommerce.entity.Category;
 import com.github.damiox.ecommerce.entity.Product;
+import com.github.damiox.ecommerce.entity.User;
 import com.github.damiox.ecommerce.util.CurrencyExchangeCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -50,7 +51,7 @@ public class ProductServiceImpl implements ProductService {
     @PreAuthorize("hasRole('ROLE_USER')")
     @Transactional
     @Override
-    public Product createProduct(String name, String currency, double price) {
+    public Product createProduct(String name, String currency, double price, User user) {
         if (!Product.CURRENCY.equals(currency)) {
             price = currencyExchangeCommand.convert(currency, Product.CURRENCY, price);
         }
@@ -61,11 +62,12 @@ public class ProductServiceImpl implements ProductService {
         Product product = new Product();
         product.setName(name);
         product.setPrice(price);
+        product.setUser(user);
 
         return productRepository.save(product);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or principal.id == #product.getUser().getId()")
     @Transactional
     @Override
     public void updateProduct(Product product, String name, String currency, double price) {
@@ -81,7 +83,7 @@ public class ProductServiceImpl implements ProductService {
         productRepository.save(product);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or principal.id == #product.getUser().getId()")
     @Transactional
     @Override
     public void deleteProduct(Product product) {
@@ -95,7 +97,7 @@ public class ProductServiceImpl implements ProductService {
         return product.getCategories().contains(category);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or principal.id == #product.getUser().getId()")
     @Transactional
     @Override
     public void addCategory(Product product, Category category) {
@@ -103,7 +105,7 @@ public class ProductServiceImpl implements ProductService {
         productRepository.save(product);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or principal.id == #product.getUser().getId()")
     @Transactional
     @Override
     public void removeCategory(Product product, Category category) {

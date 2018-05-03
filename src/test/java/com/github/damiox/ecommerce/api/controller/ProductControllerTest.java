@@ -4,8 +4,10 @@ import com.github.damiox.ecommerce.api.assembler.CategoryResourceAssembler;
 import com.github.damiox.ecommerce.api.assembler.ProductResourceAssembler;
 import com.github.damiox.ecommerce.entity.Category;
 import com.github.damiox.ecommerce.entity.Product;
+import com.github.damiox.ecommerce.entity.User;
 import com.github.damiox.ecommerce.security.JWTAuthenticationFilter;
 import com.github.damiox.ecommerce.service.ProductService;
+import com.github.damiox.ecommerce.service.SecurityService;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +45,8 @@ public class ProductControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+    @MockBean
+    private SecurityService securityService;
     @SpyBean
     private CategoryResourceAssembler categoryResourceAssembler;
     @SpyBean
@@ -54,6 +58,8 @@ public class ProductControllerTest {
 
     @Test
     public void testRetrieveAllProducts() throws Exception {
+        User user = new User();
+        user.setUsername("damiox");
         // products
         Category category = new Category();
         category.setId(1L);
@@ -63,11 +69,13 @@ public class ProductControllerTest {
         product1.setName("P1");
         product1.setPrice(100.00);
         product1.setCategories(Collections.singleton(category));
+        product1.setUser(user);
         Product product2 = new Product();
         product2.setId(11L);
         product2.setName("P2");
         product2.setPrice(130.67);
         product2.setCategories(Collections.singleton(category));
+        product2.setUser(user);
 
         Mockito.when(productService.getProductById(10L)).thenReturn(Optional.of(product1));
         Mockito.when(productService.getProductById(11L)).thenReturn(Optional.of(product2));
@@ -85,6 +93,7 @@ public class ProductControllerTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.productResourceList[0].categories", Matchers.hasSize(1)))
             .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.productResourceList[0].categories[0].name", Matchers.is("C1")))
             .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.productResourceList[0].categories[0]._links.self.href", Matchers.is("http://localhost/categories/1")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.productResourceList[0].owner", Matchers.is("damiox")))
             .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.productResourceList[0]._links.self.href", Matchers.is("http://localhost/products/10")))
             .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.productResourceList[1].name", Matchers.is("P2")))
             .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.productResourceList[1].currency", Matchers.is("EUR")))
@@ -92,6 +101,7 @@ public class ProductControllerTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.productResourceList[1].categories", Matchers.hasSize(1)))
             .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.productResourceList[1].categories[0].name", Matchers.is("C1")))
             .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.productResourceList[1].categories[0]._links.self.href", Matchers.is("http://localhost/categories/1")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.productResourceList[1].owner", Matchers.is("damiox")))
             .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.productResourceList[1]._links.self.href", Matchers.is("http://localhost/products/11")))
             .andExpect(MockMvcResultMatchers.jsonPath("$._links.first.href", Matchers.is("http://localhost/products?page=0&size=20")))
             .andExpect(MockMvcResultMatchers.jsonPath("$._links.prev.href", Matchers.is("http://localhost/products?page=1&size=20")))
@@ -106,6 +116,8 @@ public class ProductControllerTest {
 
     @Test
     public void testRetrieveProduct() throws Exception {
+        User user = new User();
+        user.setUsername("damiox");
         Category category = new Category();
         category.setId(1L);
         category.setName("C1");
@@ -114,6 +126,7 @@ public class ProductControllerTest {
         product.setName("P1");
         product.setPrice(100.00);
         product.setCategories(Collections.singleton(category));
+        product.setUser(user);
 
         Mockito.when(productService.hasProductsAssociated(Mockito.eq(category))).thenReturn(true);
         Mockito.when(productService.getProductById(Mockito.eq(10L))).thenReturn(Optional.of(product));
@@ -127,18 +140,23 @@ public class ProductControllerTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$.categories[0].name", Matchers.is("C1")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.categories[0]._links.self.href", Matchers.is("http://localhost/categories/1")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.categories[0]._links.products.href", Matchers.is("http://localhost/categories/1/products")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.owner", Matchers.is("damiox")))
             .andExpect(MockMvcResultMatchers.jsonPath("$._links.self.href", Matchers.is("http://localhost/products/10")));
     }
 
     @Test
     public void testCreateProduct() throws Exception {
+        User user = new User();
+        user.setUsername("damiox");
         Product product = new Product();
         product.setId(10L);
         product.setName("P1");
         product.setPrice(100.00);
         product.setCategories(Collections.emptySet());
+        product.setUser(user);
 
-        Mockito.when(productService.createProduct(Mockito.eq("P1"), Mockito.eq("EUR"), Mockito.eq(100.00))).thenReturn(product);
+        Mockito.when(securityService.getCurrentUser()).thenReturn(user);
+        Mockito.when(productService.createProduct(Mockito.eq("P1"), Mockito.eq("EUR"), Mockito.eq(100.00), Mockito.eq(user))).thenReturn(product);
 
         String request = "{ \"name\": \"P1\", \"currency\": \"EUR\", \"price\": 100.00 }";
         mockMvc.perform(MockMvcRequestBuilders.post(URL).content(request).contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -147,18 +165,23 @@ public class ProductControllerTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("P1")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.currency", Matchers.is("EUR")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.price", Matchers.is(100.00)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.owner", Matchers.is("damiox")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.owner", Matchers.is("damiox")))
             .andExpect(MockMvcResultMatchers.jsonPath("$._links.self.href", Matchers.is("http://localhost/products/10")));
 
-        Mockito.verify(productService).createProduct(Mockito.eq("P1"), Mockito.eq("EUR"), Mockito.eq(100.00));
+        Mockito.verify(productService).createProduct(Mockito.eq("P1"), Mockito.eq("EUR"), Mockito.eq(100.00), Mockito.eq(user));
     }
 
     @Test
     public void testUpdateProduct() throws Exception {
+        User user = new User();
+        user.setUsername("damiox");
         Product product = new Product();
         product.setId(10L);
         product.setName("P1");
         product.setPrice(100.00);
         product.setCategories(Collections.emptySet());
+        product.setUser(user);
 
         Mockito.doNothing().when(productService).updateProduct(Mockito.eq(product), Mockito.eq("P1"), Mockito.eq("EUR"), Mockito.eq(100.00));
         Mockito.when(productService.getProductById(Mockito.eq(10L))).thenReturn(Optional.of(product));
@@ -170,6 +193,7 @@ public class ProductControllerTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("P1")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.currency", Matchers.is("EUR")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.price", Matchers.is(100.00)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.owner", Matchers.is("damiox")))
             .andExpect(MockMvcResultMatchers.jsonPath("$._links.self.href", Matchers.is("http://localhost/products/10")));
 
         Mockito.verify(productService).updateProduct(Mockito.eq(product), Mockito.eq("P1"), Mockito.eq("EUR"), Mockito.eq(100.00));
@@ -177,11 +201,14 @@ public class ProductControllerTest {
 
     @Test
     public void testDeleteCategory() throws Exception {
+        User user = new User();
+        user.setUsername("damiox");
         Product product = new Product();
         product.setId(10L);
         product.setName("P1");
         product.setPrice(100.00);
         product.setCategories(Collections.emptySet());
+        product.setUser(user);
 
         Mockito.when(productService.getProductById(Mockito.eq(10L))).thenReturn(Optional.of(product));
         Mockito.doNothing().when(productService).deleteProduct(Mockito.eq(product));

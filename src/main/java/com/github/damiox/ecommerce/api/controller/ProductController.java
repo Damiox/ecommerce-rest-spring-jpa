@@ -2,8 +2,10 @@ package com.github.damiox.ecommerce.api.controller;
 
 import com.github.damiox.ecommerce.api.assembler.ProductResourceAssembler;
 import com.github.damiox.ecommerce.entity.Product;
+import com.github.damiox.ecommerce.entity.User;
 import com.github.damiox.ecommerce.exception.NotFoundException;
 import com.github.damiox.ecommerce.service.ProductService;
+import com.github.damiox.ecommerce.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +35,8 @@ public class ProductController {
     @Autowired
     private ProductService productService;
     @Autowired
+    private SecurityService securityService;
+    @Autowired
     private ProductResourceAssembler productResourceAssembler;
     @Autowired
     private PagedResourcesAssembler<Product> pagedResourcesAssembler;
@@ -56,8 +60,10 @@ public class ProductController {
 
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<?> createProduct(@RequestBody @Valid ProductDto request) {
+        // Gets the current logged-in User...
+        final User user = securityService.getCurrentUser();
         // Creating a new product in the application...
-        final Product product = productService.createProduct(request.getName(), request.getCurrency(), request.getPrice());
+        final Product product = productService.createProduct(request.getName(), request.getCurrency(), request.getPrice(), user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(productResourceAssembler.toResource(product));
     }

@@ -2,6 +2,7 @@ package com.github.damiox.ecommerce.service;
 
 import com.github.damiox.ecommerce.entity.Category;
 import com.github.damiox.ecommerce.entity.Product;
+import com.github.damiox.ecommerce.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -52,7 +53,7 @@ public interface ProductService {
      * @param price the price of the product
      * @return the new product
      */
-    Product createProduct(String name, String currency, double price);
+    Product createProduct(String name, String currency, double price, User user);
 
     /**
      * Updates an existing product.

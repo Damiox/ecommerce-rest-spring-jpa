@@ -19,7 +19,9 @@ create table if not exists app_product (
     id bigint,
     name varchar(300) not null,
     price double not null,
-    primary key (id)
+    userid bigint not null,
+    primary key (id),
+    foreign key (userid) references app_user(id)
 );
 
 create table if not exists app_product_category (

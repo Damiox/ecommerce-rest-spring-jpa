@@ -29,7 +29,8 @@ public class ProductResourceAssembler extends ResourceAssemblerSupport<Product, 
             entity.getName(),
             Product.CURRENCY,
             entity.getPrice(),
-            !Collections.isEmpty(entity.getCategories()) ? categoryResourceAssembler.toResources(entity.getCategories()) : null
+            !Collections.isEmpty(entity.getCategories()) ? categoryResourceAssembler.toResources(entity.getCategories()) : null,
+            entity.getUser().getUsername()
         );
     }
 

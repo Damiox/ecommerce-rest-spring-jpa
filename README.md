@@ -29,6 +29,7 @@ Add a "super" user.
 
 1. A product might be associated to multiple categories. For instance, an electric toothbrush may belong to both "Electronics" and "Beauty & Personal Care" categories.
 2. There are some fields that for simplicity we are not having in Product table such as description, features, price discount, refurbished, among others.
+3. Products belong to Users. Only the creating user is able to update or delete Products, but all Users can see products present in the system.
 
 ## Notes
 
@@ -42,13 +43,14 @@ It's highly recommendable to take a look at the unit tests defined in `com.githu
 
 Currently there are two roles defined as follows:
 - ADMIN: it's the super user role that can manipulate categories and products.
-- USER: it's a user role that can manipulate only products. It can also get data for products and categories.
+- USER: it's a user role that can manipulate *only* products that were created by that user. It can also get data for other users products and categories in the system.
 
 #### Admin User
 `curl -H "Content-Type: application/json" -X POST "http://localhost:8080/login" -d '{ "username": "admin", "password": "admin" }'`
 
 #### Normal User
-`curl -H "Content-Type: application/json" -X POST "http://localhost:8080/login" -d '{ "username": "user", "password": "user" }'`
+`curl -H "Content-Type: application/json" -X POST "http://localhost:8080/login" -d '{ "username": "user1", "password": "user1" }'`
+`curl -H "Content-Type: application/json" -X POST "http://localhost:8080/login" -d '{ "username": "user2", "password": "user2" }'`
 
 ### Resources
 
@@ -59,6 +61,7 @@ The idea behind this JWT token is to avoid going back to the database to validat
 There are several approaches for authentication such as Cookies, GUID tokens, OAuth2, etc... but we are choosing JWT for simplicity and scalability purposes.
 
 Note: we are using HATEOAS-oriented REST endpoints (https://en.wikipedia.org/wiki/HATEOAS), so you will find the possible operations to perform on resources while browsing the main endpoints: `/products` and `/categories`
+In the below examples, you need to replace `XXXX` with the token returned in the authentication process (please see the `Authentication` section for more information).
 
 #### Products
 
@@ -66,14 +69,21 @@ The list of Products is always a paginated result for scalability.
 
 URL: `/products`
 
-e.g. to get products: `curl -H "Authorization: XXXX" -X GET "http://localhost:8080/products"`
-Note: you need to replace `XXXX` with the token returned in the authentication process (please see the `Authentication` section for more information).
+* To get (paged) list of products: `curl -H "Authorization: XXXX" -X GET "http://localhost:8080/products"`
+* To get products info: `curl -H "Authorization: XXXX" -X GET "http://localhost:8080/products/{id}"`
+* To create products: `curl -H "Content-Type: application/json" -H "Authorization: XXXX" -X POST "http://localhost:8080/products"  -d '{ "name": "P1", "currency": "EUR", "price": 100.00 }'`
+* To update products: `curl -H "Content-Type: application/json" -H "Authorization: XXXX" -X PUT "http://localhost:8080/products/{id}" -d '{ "name": "P1", "currency": "EUR", "price": 100.00 }'`
+* To delete products: `curl -H "Authorization: XXXX" -X DELETE "http://localhost:8080/products/{id}"`
 
 #### Categories
 
 URL: `/categories`
 
-e.g. to get products: `curl -H "Authorization: XXXX" -X GET "http://localhost:8080/categories"`
+* To get list of categories: `curl -H "Authorization: XXXX" -X GET "http://localhost:8080/categories"`
+* To get category info: `curl -H "Authorization: XXXX" -X GET "http://localhost:8080/categories/{id}"`
+* To create category: `curl -H "Content-Type: application/json" -H "Authorization: XXXX" -X POST "http://localhost:8080/categories"  -d '{ "name": "C1" }'`
+* To update category: `curl -H "Content-Type: application/json" -H "Authorization: XXXX" -X PUT "http://localhost:8080/categories/{id}" -d '{ "name": "C1" }'`
+* To delete category: `curl -H "Authorization: XXXX" -X DELETE "http://localhost:8080/categories/{id}"`
 
 ##### Add / Remove child categories
 
@@ -86,7 +96,7 @@ e.g. to get products: `curl -H "Authorization: XXXX" -X GET "http://localhost:80
 * To see the current products for a given category, you can do a GET on `/categories/{parentid}/products`.
 Note: the API will return also products that are being associated indirectly.
 That means if a Product is associated with Category B, which is in turn a child of Category A,
-then the product is directly associated with Category B, and indirectly associated with Category A.  
+then the product is directly associated with Category B, and indirectly associated with Category A.
 Accessing to `/categories/A/products` will return that product that is associated with Category A indirectly along with the products being associated directly with the Category A.
 
 ## Technologies

@@ -6,6 +6,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -52,15 +53,22 @@ public class SecurityServiceImpl implements SecurityService, UserDetailsService 
         final Claims claims = JwtUtils.parseToken(token);
 
         User user = new User();
-        user.setUsername(claims.getSubject());
+        user.setId(Long.parseLong(claims.getSubject()));
         user.setPassword("");
-        user.setId(Long.parseLong(claims.get(JwtUtils.TOKEN_CLAIM_SUB).toString()));
+        user.setUsername(claims.get(JwtUtils.TOKEN_CLAIM_USERNAME).toString());
         user.setRole(claims.get(JwtUtils.TOKEN_CLAIM_ROLES).toString());
 
         // Setting up Authentication...
         SecurityContextHolder.getContext().setAuthentication(
             new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities())
         );
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Transactional
+    @Override
+    public User getCurrentUser() {
+        return (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     @Transactional
@@ -73,7 +81,7 @@ public class SecurityServiceImpl implements SecurityService, UserDetailsService 
     private static class JwtUtils {
         private static final String TOKEN_SECRET_KEY = "ECommerceAppSecretKey";
         private static final String TOKEN_PREFIX = "Bearer";
-        private static final String TOKEN_CLAIM_SUB = "sub";
+        private static final String TOKEN_CLAIM_USERNAME = "username";
         private static final String TOKEN_CLAIM_ROLES = "roles";
         private static final long TOKEN_EXPIRATION = 3_600_000; // 1 hour
 
@@ -83,8 +91,8 @@ public class SecurityServiceImpl implements SecurityService, UserDetailsService 
 
             String jwtToken =
                 Jwts.builder()
-                    .setSubject(username)
-                    .claim(TOKEN_CLAIM_SUB, userId)
+                    .setSubject(userId.toString())
+                    .claim(TOKEN_CLAIM_USERNAME, username)
                     .claim(TOKEN_CLAIM_ROLES, userRole)
                     .setIssuedAt(now)
                     .setNotBefore(now)

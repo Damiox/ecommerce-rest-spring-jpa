@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -33,6 +34,10 @@ public class Product extends AbstractEntity {
     @Column(name = "price", nullable = false)
     private double price;
 
+    @ManyToOne
+    @JoinColumn(name = "userid", nullable = false, updatable = false)
+    private User user;
+
     public String getName() {
         return name;
     }
@@ -55,6 +60,14 @@ public class Product extends AbstractEntity {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
 }
