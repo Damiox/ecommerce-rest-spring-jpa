@@ -42,7 +42,7 @@ It's highly recommendable to take a look at the unit tests defined in `com.githu
 
 Currently there are two roles defined as follows:
 - ADMIN: it's the super user role that can manipulate categories and products.
-- USER: it's a user role that can manipulate only products. It can also get data for products and categories. Ideally, Users should only access to their own Products.
+- USER: it's a user role that can manipulate only products. It can also get data for products and categories.
 
 #### Admin User
 `curl -H "Content-Type: application/json" -X POST "http://localhost:8080/login" -d '{ "username": "admin", "password": "admin" }'`
@@ -53,7 +53,7 @@ Currently there are two roles defined as follows:
 ### Resources
 
 Excepting the `/login` API endpoint that is being used for authentication, all the other API endpoints require a HTTP header to be passed in as parameter in all requests.
-This HTTP header will have the key name "Authorization" and the key value will be the authentication token that was retrieved during the authentication transaction (please see the `Authentication` section)`.
+This HTTP header will have the key name "Authorization" and the key value will be the authentication token that was retrieved during the authentication transaction (please see the `Authentication` section).
 Note: this token is a JWT token that is internally signed with a private key configured in the server, and it has the public user information on it.
 The idea behind this JWT token is to avoid going back to the database to validate whether a JWT token is valid or not, because that information is already contained in the token itself.
 There are several approaches for authentication such as Cookies, GUID tokens, OAuth2, etc... but we are choosing JWT for simplicity and scalability purposes.
@@ -86,7 +86,7 @@ e.g. to get products: `curl -H "Authorization: XXXX" -X GET "http://localhost:80
 * To see the current products for a given category, you can do a GET on `/categories/{parentid}/products`.
 Note: the API will return also products that are being associated indirectly.
 That means if a Product is associated with Category B, which is in turn a child of Category A,
-then the product is directly associated with Category B, and indirectly associated with Category A.
+then the product is directly associated with Category B, and indirectly associated with Category A.  
 Accessing to `/categories/A/products` will return that product that is associated with Category A indirectly along with the products being associated directly with the Category A.
 
 ## Technologies
