@@ -30,7 +30,13 @@ Add a "super" user.
 1. A product might be associated to multiple categories. For instance, an electric toothbrush may belong to both "Electronics" and "Beauty & Personal Care" categories.
 2. There are some fields that for simplicity we are not having in Product table such as description, features, price discount, refurbished, among others.
 
-## Testing
+## Notes
+
+It's important to note that this is a HATEOAS-oriented REST API. That means you will find some URLs in the API response referencing to possible actions that can be performed on the resource.
+It's highly recommendable to take a look at the unit tests defined in `com.github.damiox.ecommerce.api.controller` to understand the expected API responses from a Development perspective.
+
+
+## How to use this API
 
 ### Authentication
 
@@ -46,20 +52,22 @@ Currently there are two roles defined as follows:
 
 ### Resources
 
-Excepting the `/login` API endpoint that is being used for authentication, the other API endpoints require a HTTP header to be passed in as parameter
-This HTTP header will have the name "Authorization" and the value will be the authentication token that was retrieved during the authentication transaction.
-Note: this token is a JWT token that is signed with a private key configured in the server, and it has the user information.
+Excepting the `/login` API endpoint that is being used for authentication, all the other API endpoints require a HTTP header to be passed in as parameter in all requests.
+This HTTP header will have the key name "Authorization" and the key value will be the authentication token that was retrieved during the authentication transaction (please see the `Authentication` section)`.
+Note: this token is a JWT token that is internally signed with a private key configured in the server, and it has the public user information on it.
 The idea behind this JWT token is to avoid going back to the database to validate whether a JWT token is valid or not, because that information is already contained in the token itself.
+There are several approaches for authentication such as Cookies, GUID tokens, OAuth2, etc... but we are choosing JWT for simplicity and scalability purposes.
 
 Note: we are using HATEOAS-oriented REST endpoints (https://en.wikipedia.org/wiki/HATEOAS), so you will find the possible operations to perform on resources while browsing the main endpoints: `/products` and `/categories`
 
 #### Products
 
-The list of Products is always a paginated result just in case.
+The list of Products is always a paginated result for scalability.
 
 URL: `/products`
 
 e.g. to get products: `curl -H "Authorization: XXXX" -X GET "http://localhost:8080/products"`
+Note: you need to replace `XXXX` with the token returned in the authentication process (please see the `Authentication` section for more information).
 
 #### Categories
 
@@ -69,13 +77,13 @@ e.g. to get products: `curl -H "Authorization: XXXX" -X GET "http://localhost:80
 
 ##### Add / Remove child categories
 
-To associate / dis-associate a child category with / from a parent category you can use the following URL: `/categories/{parentid}/subcategories/{childid}`
-To see the current child categories for a given category, you can do a GET on `/categories/{parentid}/subcategories`
+* To associate / dis-associate a child category with / from a parent category you can use the following URL: `/categories/{parentid}/subcategories/{childid}`
+* To see the current child categories for a given category, you can do a GET on `/categories/{parentid}/subcategories`
 
 ##### Link / Unlink products
 
-To link / unlink products with categories you can use the following URL: `/categories/{categoryid}/products/{productid}`
-To see the current products for a given category, you can do a GET on `/categories/{parentid}/products`.
+* To link / unlink products with categories you can use the following URL: `/categories/{categoryid}/products/{productid}`
+* To see the current products for a given category, you can do a GET on `/categories/{parentid}/products`.
 Note: the API will return also products that are being associated indirectly.
 That means if a Product is associated with Category B, which is in turn a child of Category A,
 then the product is directly associated with Category B, and indirectly associated with Category A.
